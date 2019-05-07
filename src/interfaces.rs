@@ -56,10 +56,7 @@ where
 }
 
 /// Statically-sized array stored in the heap.
-pub trait Array<V>:
-    Map<usize, V> + DynamicContainer<V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
-{
-}
+pub trait Array<V>: Map<usize, V> + Index<usize, Output = V> + IndexMut<usize, Output = V> {}
 
 /// Dynamically changing array of values.
 pub trait DynamicArray<V>:
