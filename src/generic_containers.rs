@@ -1,7 +1,7 @@
 /// Trait for a simple container.
 pub trait Container<E> {
-    fn add(element: E);
-    fn len() -> usize;
+    fn add(&mut self, element: E);
+    fn len(&self) -> usize;
 }
 
 /// Trait that represents dynamically growing containers.
