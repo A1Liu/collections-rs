@@ -1,6 +1,6 @@
 [package]
 name = "containers-rs"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Albert Liu <albertymliu@gmail.com>"]
 edition = "2018"
 description = "'Collections' interfaces for describing objects that contain other objects"
