@@ -23,17 +23,3 @@ pub trait DynamicContainer<E>: Container<E> {
     /// Returns the number of elements the container can hold without reallocating.
     fn capacity(&self) -> usize;
 }
-
-/// Container that can give out references to its elements
-pub trait OpenContainer<'a, E, R = &'a E>: Container<E>
-where
-    R: Deref<Target = E>,
-{
-}
-
-/// Container that can give out mutable references to its elements
-pub trait OpenMutContainer<'a, E, Rm = &'a mut E>: Container<E>
-where
-    Rm: DerefMut<Target = E>,
-{
-}
