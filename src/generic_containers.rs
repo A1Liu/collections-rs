@@ -1,6 +1,8 @@
 /// Trait for a simple container.
 pub trait Container<E> {
+    /// Add an element to the container.
     fn add(&mut self, element: E);
+    /// Get the size of the container.
     fn len(&self) -> usize;
 }
 
@@ -18,13 +20,4 @@ pub trait DynamicContainer<E>: Container<E> {
 
     /// Returns the number of elements the container can hold without reallocating.
     fn capacity(&self) -> usize;
-}
-
-/// Trait for objects that can be iterated over.
-pub trait Iterable<'a, E, ERef = &'a E, EMutRef = &'a mut E>: IntoIterator
-where
-    Self: 'a,
-    &'a Self: IntoIterator<Item = ERef>,
-    &'a mut Self: IntoIterator<Item = EMutRef>,
-{
 }
