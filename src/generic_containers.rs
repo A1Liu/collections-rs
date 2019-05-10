@@ -1,5 +1,3 @@
-use core::ops::{Deref, DerefMut};
-
 /// Trait for a simple container.
 pub trait Container<E> {
     /// Add an element to the container.
