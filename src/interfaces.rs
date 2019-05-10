@@ -3,23 +3,22 @@ use core::borrow::Borrow;
 use core::ops::{Deref, DerefMut, Index, IndexMut};
 
 /// Trait for a container indexed by a value that implements `Copy` and `Eq`.
-pub trait CopyMap<K, V, E = (K, V)>: Container<E>
+pub trait CopyMap<'a, K, V, E = V, R = &'a V, Rm = &'a mut V>: Container<V>
 where
     K: Copy + Eq,
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
     /// Get a value from this Map. Takes a key by reference
     /// and returns a reference to the corresponding data,
     /// or `None` if none exists.
-    fn get<R>(&self, key: K) -> Option<R>
-    where
-        R: Deref<Target = V>;
+    fn get(&self, key: K) -> Option<R>;
 
     /// Returns a mutable reference to an object stored in
     /// this container based on the key given, or `None` if
     /// the key does not exist.
-    fn get_mut<R>(&mut self, key: K) -> Option<R>
-    where
-        R: DerefMut<Target = V>;
+    fn get_mut(&mut self, key: K) -> Option<Rm>;
 
     /// Adds a new item into this container with the associated key,
     /// and returns the previous value associated with that key, if it existed.
@@ -27,27 +26,28 @@ where
 }
 
 /// Trait for a container indexed by a value that implements `Eq`.
-pub trait Map<K, V, E = (K, V)>: Container<E>
+pub trait Map<'a, K, V, E = V, R = &'a V, Rm = &'a mut V>: Container<V>
 where
     K: Eq,
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
     /// Get a value from this Map. Takes a key by reference
     /// and returns a reference to the corresponding data,
     /// or `None` if none exists.
-    fn get<Q, R>(&self, key: &Q) -> Option<R>
+    fn get<Q: ?Sized>(&self, key: &Q) -> Option<R>
     where
         K: Borrow<Q>,
-        Q: Eq + ?Sized,
-        R: Deref<Target = V>;
+        Q: Eq;
 
     /// Returns a mutable reference to an object stored in
     /// this container based on the key given, or `None` if
     /// the key does not exist.
-    fn get_mut<Q, R>(&mut self, k: &Q) -> Option<R>
+    fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<Rm>
     where
         K: Borrow<Q>,
-        Q: Eq + ?Sized,
-        R: DerefMut<Target = V>;
+        Q: Eq;
 
     /// Adds a new item into this container with the associated key,
     /// and returns the previous value associated with that key, if it existed.
@@ -56,17 +56,17 @@ where
 
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
-pub trait CopyDictionary<K, V>:
-    CopyMap<K, V, K> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
+pub trait CopyDictionary<'a, K, V, R = &'a V, Rm = &'a mut V>:
+    CopyMap<'a, K, V, V, R, Rm> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
 where
     K: Copy + Eq,
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
     /// Returns true if this container contains the key.
-    fn contains<R>(&self, key: K) -> bool
-    where
-        R: Deref<Target = V>,
-    {
-        match self.get::<R>(key) {
+    fn contains(&self, key: K) -> bool {
+        match self.get(key) {
             Some(_) => true,
             None => false,
         }
@@ -79,19 +79,21 @@ where
 
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
-pub trait Dictionary<K, V>:
-    Map<K, V, K> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
+pub trait Dictionary<'a, K, V, R = &'a V, Rm = &'a mut V>:
+    Map<'a, K, V, V, R, Rm> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
 where
     K: Eq,
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
     /// Returns true if this container contains the key.
-    fn contains<Q, R>(&self, key: &Q) -> bool
+    fn contains<Q: ?Sized>(&self, key: &Q) -> bool
     where
         K: Borrow<Q>,
-        Q: Eq + ?Sized,
-        R: Deref<Target = V>,
+        Q: Eq,
     {
-        match self.get::<Q, R>(key) {
+        match self.get(key) {
             Some(_) => true,
             None => false,
         }
@@ -106,13 +108,24 @@ where
 }
 
 /// Statically-sized array stored in the heap.
-pub trait Array<V>:
-    CopyMap<usize, V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+pub trait Array<'a, V, R = &'a V, Rm = &'a mut V>:
+    CopyMap<'a, usize, V, R, Rm> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+where
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
 }
 
 /// Dynamically changing array of values.
-pub trait DynamicArray<V>:
-    CopyMap<usize, V, V> + DynamicContainer<V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+pub trait DynamicArray<'a, V, R = &'a V, Rm = &'a mut V>:
+    CopyMap<'a, usize, V, V, R, Rm>
+    + DynamicContainer<V>
+    + Index<usize, Output = V>
+    + IndexMut<usize, Output = V>
+where
+    V: 'a,
+    R: Deref<Target = V>,
+    Rm: DerefMut<Target = V>,
 {
 }
