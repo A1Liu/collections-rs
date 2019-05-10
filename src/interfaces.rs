@@ -2,8 +2,7 @@ use crate::generic_containers::*;
 use core::borrow::Borrow;
 use core::ops::{Index, IndexMut};
 
-/// Trait for a container indexed by a value that implements copy. The value that
-/// indexes the container must implement the Eq trait to.
+/// Trait for a container indexed by a value that implements `Copy` and `Eq`.
 pub trait CopyMap<K, V, E = (K, V)>: Container<E>
 where
     K: Copy + Eq,
@@ -23,8 +22,7 @@ where
     fn insert(&mut self, k: K, v: V) -> Option<V>;
 }
 
-/// Trait for a container indexed by a value. The value that
-/// indexes the container must implement the Eq trait to.
+/// Trait for a container indexed by a value that implements `Eq`.
 pub trait Map<K, V, E = (K, V)>: Container<E>
 where
     K: Eq,
