@@ -3,7 +3,7 @@ use core::borrow::Borrow;
 use core::ops::{Deref, DerefMut, Index, IndexMut};
 
 /// Trait for a container indexed by a value that implements `Copy` and `Eq`.
-pub trait CopyMap<'a, K, V, E = V, R = &'a V, Rm = &'a mut V>: Container<V>
+pub trait CopyMap<'a, K, V, E = (K, V), R = &'a V, Rm = &'a mut V>: Container<E>
 where
     K: Copy + Eq,
     V: 'a,
@@ -26,7 +26,7 @@ where
 }
 
 /// Trait for a container indexed by a value that implements `Eq`.
-pub trait Map<'a, K, V, E = V, R = &'a V, Rm = &'a mut V>: Container<V>
+pub trait Map<'a, K, V, E = (K, V), R = &'a V, Rm = &'a mut V>: Container<E>
 where
     K: Eq,
     V: 'a,
@@ -57,7 +57,10 @@ where
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
 pub trait CopyDictionary<'a, K, V, R = &'a V, Rm = &'a mut V>:
-    CopyMap<'a, K, V, V, R, Rm> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
+    CopyMap<'a, K, V, V, R, Rm>
+    + DynamicContainer<(K, V)>
+    + Index<K, Output = V>
+    + IndexMut<K, Output = V>
 where
     K: Copy + Eq,
     V: 'a,
@@ -80,7 +83,7 @@ where
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
 pub trait Dictionary<'a, K, V, R = &'a V, Rm = &'a mut V>:
-    Map<'a, K, V, V, R, Rm> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
+    Map<'a, K, V, (K, V), R, Rm> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
 where
     K: Eq,
     V: 'a,
