@@ -109,7 +109,7 @@ where
 
 /// Statically-sized array stored in the heap.
 pub trait Array<'a, V, R = &'a V, Rm = &'a mut V>:
-    CopyMap<'a, usize, V, R, Rm> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+    CopyMap<'a, usize, V, (usize, V), R, Rm> + Index<usize, Output = V> + IndexMut<usize, Output = V>
 where
     V: 'a,
     R: Deref<Target = V>,
