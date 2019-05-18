@@ -10,12 +10,12 @@ where
     /// Get a value from this Map. Takes a key by reference
     /// and returns a reference to the corresponding data,
     /// or `None` if none exists.
-    fn get(&self, key: K) -> Option<&E>;
+    fn get(&self, key: K) -> Option<&V>;
 
     /// Returns a mutable reference to an object stored in
     /// this container based on the key given, or `None` if
     /// the key does not exist.
-    fn get_mut(&mut self, key: K) -> Option<&mut E>;
+    fn get_mut(&mut self, key: K) -> Option<&mut V>;
 
     /// Adds a new item into this container with the associated key,
     /// and returns the previous value associated with that key, if it existed.
@@ -30,7 +30,7 @@ where
     /// Get a value from this Map. Takes a key by reference
     /// and returns a reference to the corresponding data,
     /// or `None` if none exists.
-    fn get<Q: ?Sized>(&self, key: &Q) -> Option<&E>
+    fn get<Q: ?Sized>(&self, key: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
         Q: Eq;
@@ -38,7 +38,7 @@ where
     /// Returns a mutable reference to an object stored in
     /// this container based on the key given, or `None` if
     /// the key does not exist.
-    fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut E>
+    fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut V>
     where
         K: Borrow<Q>,
         Q: Eq;
