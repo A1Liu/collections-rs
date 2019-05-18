@@ -3,7 +3,7 @@ use core::borrow::Borrow;
 use core::ops::{Index, IndexMut};
 
 /// Trait for a container indexed by a value that implements `Copy` and `Eq`.
-pub trait CopyMap<K, V, E = (K, V)>: Container<E>
+pub trait CopyMap<K, V>: Container
 where
     K: Copy + Eq,
 {
@@ -23,7 +23,7 @@ where
 }
 
 /// Trait for a container indexed by a value that implements `Eq`.
-pub trait Map<K, V, E = (K, V)>: Container<E>
+pub trait Map<K, V>: Container
 where
     K: Eq,
 {
@@ -51,7 +51,7 @@ where
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
 pub trait CopyDictionary<K, V>:
-    CopyMap<K, V, V> + DynamicContainer<(K, V)> + Index<K, Output = V> + IndexMut<K, Output = V>
+    CopyMap<K, V> + DynamicContainer + Index<K, Output = V> + IndexMut<K, Output = V>
 where
     K: Copy + Eq,
 {
@@ -71,7 +71,7 @@ where
 /// Key-value map that also uses the `[`bracket`]` operators to access and modify
 /// the internal data.
 pub trait Dictionary<K, V, R, Rm>:
-    Map<K, V, (K, V)> + DynamicContainer<K> + Index<K, Output = V> + IndexMut<K, Output = V>
+    Map<K, V> + DynamicContainer + Index<K, Output = V> + IndexMut<K, Output = V>
 where
     K: Eq,
 {
@@ -97,12 +97,12 @@ where
 
 /// Statically-sized array stored in the heap.
 pub trait Array<V>:
-    CopyMap<usize, V, (usize, V)> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+    CopyMap<usize, V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
 {
 }
 
 /// Dynamically changing array of values.
 pub trait DynamicArray<V>:
-    CopyMap<usize, V, V> + DynamicContainer<V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
+    CopyMap<usize, V> + DynamicContainer + Index<usize, Output = V> + IndexMut<usize, Output = V>
 {
 }
