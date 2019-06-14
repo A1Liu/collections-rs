@@ -7,18 +7,26 @@ pub trait CopyMap<K, V>: Container
 where
     K: Copy + Eq,
 {
-    /// Get a value from this Map. Takes a key by reference
+    /// Get a reference to a value from this map.
+    ///
+    /// Takes a key by value
     /// and returns a reference to the corresponding data,
-    /// or `None` if none exists.
+    /// or `None` if the key doesn't exist in the map.
     fn get(&self, key: K) -> Option<&V>;
 
-    /// Returns a mutable reference to an object stored in
-    /// this container based on the key given, or `None` if
-    /// the key does not exist.
+    /// Get a mutable reference to a value from this map.
+    ///
+    /// Takes a key by value
+    /// and returns a mutable reference to the corresponding data,
+    /// or `None` if the key doesn't exist in the map.
     fn get_mut(&mut self, key: K) -> Option<&mut V>;
 
-    /// Adds a new item into this container with the associated key,
-    /// and returns the previous value associated with that key, if it existed.
+    /// Inserts a key-value pair into the map.
+    ///
+    /// If the map did not have this key present, None is returned.
+    ///
+    /// If the map did have this key present, the value is updated, and the old
+    /// value is returned. Note that the key itself isn't necessarily updated.
     fn insert(&mut self, k: K, v: V) -> Option<V>;
 }
 
@@ -27,31 +35,38 @@ pub trait Map<K, V>: Container
 where
     K: Eq,
 {
-    /// Get a value from this Map. Takes a key by reference
+    /// Returns a reference to a value from this Map.
+    ///
+    /// Takes a key by reference
     /// and returns a reference to the corresponding data,
-    /// or `None` if none exists.
+    /// or `None` if the key doesn't exist in the map.
     fn get<Q: ?Sized>(&self, key: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
         Q: Eq;
 
-    /// Returns a mutable reference to an object stored in
-    /// this container based on the key given, or `None` if
-    /// the key does not exist.
+    /// Returns a mutable reference to a value in this map.
+    ///
+    /// Takes a key by reference
+    /// and returns a mutable reference to the corresponding data,
+    /// or `None` if the key doesn't exist in the map.
     fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut V>
     where
         K: Borrow<Q>,
         Q: Eq;
 
-    /// Adds a new item into this container with the associated key,
-    /// and returns the previous value associated with that key, if it existed.
+    /// Inserts a key-value pair into the map.
+    ///
+    /// If the map did not have this key present, None is returned.
+    ///
+    /// If the map did have this key present, the value is updated, and the old
+    /// value is returned. Note that the key itself isn't necessarily updated.
     fn insert(&mut self, k: K, v: V) -> Option<V>;
 }
 
-/// Key-value map that also uses the `[`bracket`]` operators to access and modify
-/// the internal data.
-pub trait CopyDictionary<K, V>:
-    CopyMap<K, V> + DynamicContainer + Index<K, Output = V> + IndexMut<K, Output = V>
+/// Key-value map that can dynamically change size, indexed by a key that implements
+/// `Copy`.
+pub trait CopyDictionary<K, V>: CopyMap<K, V> + DynamicContainer
 where
     K: Copy + Eq,
 {
@@ -68,10 +83,8 @@ where
     fn remove(&mut self, k: K) -> Option<V>;
 }
 
-/// Key-value map that also uses the `[`bracket`]` operators to access and modify
-/// the internal data.
-pub trait Dictionary<K, V, R, Rm>:
-    Map<K, V> + DynamicContainer + Index<K, Output = V> + IndexMut<K, Output = V>
+/// Key-value map that can dynamically change size.
+pub trait Dictionary<K, V>: Map<K, V> + DynamicContainer
 where
     K: Eq,
 {
@@ -95,13 +108,13 @@ where
         Q: Eq;
 }
 
-/// Statically-sized array stored in the heap.
+/// Statically-sized array of values.
 pub trait Array<V>:
     CopyMap<usize, V> + Index<usize, Output = V> + IndexMut<usize, Output = V>
 {
 }
 
-/// Dynamically changing array of values.
+/// Dynamically-sized array of values.
 pub trait DynamicArray<V>:
     CopyMap<usize, V> + DynamicContainer + Index<usize, Output = V> + IndexMut<usize, Output = V>
 {
